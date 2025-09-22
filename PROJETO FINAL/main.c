@@ -1,36 +1,39 @@
-
 // projeto de floyd-warshall - prazo de entrega 10/08.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define max 100
-#define infinito 999999
+#define infinito 999.00
 
 int n = 0;
 char cidades[max][100];
 int matriz_predecessores[max][max];
-int matriz_distancias_minimas[max][max];
-int matriz_de_adjacencia[max][max];
+float matriz_distancias_minimas[max][max]; // 
+float matriz_de_adjacencia[max][max];
 int Dados_carregados = 0;
-int algorimtmoExecutado = 0;
+int algoritmoExecutado = 0;
 
-// todos os procedimentos das funções:
-void inicializar_matrizes();                                   // implementada
-void floyd_warshall();                                         // implementada
-void imprimirmatriz(int matriz[max][max], const char *titulo); // implementada
+// procedimentos das funções:
+/*
+Necessidade de dados externos & Sem a necessidade de dados externos.
+*/
+void inicializar_matrizes();
+void floyd_warshall();
+void imprimirmatriz_minima(float matriz[max][max], const char *titulo);
+void imprimirmatriz_predecessor(int matriz[max][max], const char *titulo);
 void salvardados();
-void carregardados(const char *arquivo);
+int carregardados(const char *arquivo);
 void salvar_resultados(const char *arquivo);
-void mostrarocaminho(const int origem, int destino);
+void mostrar_caminho(const int origem, int destino);
 
-// menus do programa em formato de procedimento:
+// procedimento dos menus:
 
 void menu_entrada_dados();
 void menu_ver_matrizes();
 void ver_caminho();
 
-//inicio do programa principal:
+// programa principal:
 int main()
 {
     int opcao;
@@ -42,7 +45,7 @@ int main()
         printf("\n3 - VER TODAS AS MATRIZES DISPONIVEIS");
         printf("\n4 - CONSULTAR O MENOR CAMINHO");
         printf("\n5 - SALVAR TODOS OS DADOS EM UM ARQUIVO");
-        printf("\n0 - SAIR DO PROGRAMA");
+        printf("\n0 - QUERO SAIR DO PROGRAMA");
         printf("\nSUA ESCOLHA EH: ");
         scanf("%d", &opcao);
 
@@ -51,13 +54,16 @@ int main()
         case 1:
             menu_entrada_dados();
             break;
+
         case 2:
             if (!Dados_carregados)
             {
-                printf("CARREGUE TODOS OS DADOS PRIMEIRO!");
+                printf("\nCARREGUE TODOS OS DADOS PRIMEIRO!\n");
             }
             else
+            {
                 floyd_warshall();
+            }
             break;
 
         case 3:
@@ -69,17 +75,18 @@ int main()
             break;
 
         case 5:
-            if (!algorimtmoExecutado)
+            if (!algoritmoExecutado)
             {
-                puts("POR FAVOR, FAÇA O ALGORITMO PRIMEIRO!");
+                puts("\nPOR FAVOR, FACA O ALGORITMO PRIMEIRO!");
             }
             else
             {
                 salvar_resultados("resultados.txt");
             }
+            break;
 
         case 0:
-            puts("FINALIZANDO O PROGRAMA...");
+            puts("\nFINALIZANDO O PROGRAMA...");
             return 0;
 
         default:
@@ -89,7 +96,6 @@ int main()
 
     return 0;
 }
-
 
 /*
 FUNCAO DE INICIALIZAR MATRIZES:
@@ -133,18 +139,19 @@ void floyd_warshall()
         for (int i = 0; i < n; i++)
         {
             for (int j = 0; j < n; j++)
-            {
+            { //  i --> k --> j sendo mais curto do que i --> j
                 if (matriz_distancias_minimas[i][k] + matriz_distancias_minimas[k][j] < matriz_distancias_minimas[i][j])
                 {
                     matriz_distancias_minimas[i][j] = matriz_distancias_minimas[i][k] + matriz_distancias_minimas[k][j];
                     matriz_predecessores[i][j] = matriz_predecessores[k][j];
                 }
-                // essa parte do if vai testar se a distancia de i para j via k é menor do que a distancia de i para j , caso seja, ele atualiza a matriz de predecessores.
-                algorimtmoExecutado = 1;
+                // Se passar pelo vértice  k --> i --> j fica mais curto,
+                // atualiza a distância mínima e o predecessor para indicar o novo caminho.
+                algoritmoExecutado = 1;
             }
         }
     }
-    puts("O ALGORITMO FOI EXECUTADO!");
+    puts("\nO ALGORITMO FOI EXECUTADO!");
 }
 
 /*
@@ -152,33 +159,49 @@ Esta função irá servir para imprimir a matriz de numeros inteiros na tela, ou
 elementos principais:
 const char *titulo = neste caso o titulo será o nome dado a matriz a ser impressa.
 */
-void imprimirmatriz(int matriz[max][max], const char *titulo)
+
+void imprimirmatriz_minima(float matriz[max][max], const char *titulo)
 {
-    printf("\n%s: ", titulo);
+    printf("\n%s:\n\n", titulo);
+
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < n; j++)
         {
             if (matriz[i][j] == infinito)
-            {
-                printf("INFINITO ");
-            }
+                printf("%7s", "INF"); // 7 posições reservadas
             else
-            {
-                printf("%3d", matriz[i][j]);
-            }
+                printf("%7.2f   ", matriz[i][j]); // 7 posições, 2 casas decimais
         }
         printf("\n");
     }
 }
-/*
 
+/*
+Tem o fito de exibir na tela a matriz de predecessores
+*/
+void imprimirmatriz_predecessor(int matriz[max][max], const char *titulo)
+{
+    printf("\n%s:\n\n", titulo);
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            printf("%4d  ", matriz[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+/*
+esta função tem o fito de gravar no arquivo "dados" todas as informações carregadas ou calculadas do programa.
 
 */
 
 void salvardados()
 {
-    FILE *f = fopen("dados.txt", "w");
+    FILE *f = fopen("dados.txt", "w"); 
     if (f == NULL)
     {
         puts("ERRO AO ABRIR ESTE ARQUIVO...");
@@ -186,15 +209,22 @@ void salvardados()
     }
     fprintf(f, "%i\n", n);
     for (int i = 0; i < n; i++)
+    {
         fprintf(f, "%s\n", cidades[i]);
+    }
     for (int i = 0; i < n; i++)
+    {
         for (int j = 0; j < n; j++)
-            fprintf(f, "%i\n", matriz_de_adjacencia[i][j]);
+        {
+            fprintf(f, "%.2f; ", matriz_de_adjacencia[i][j]);
+        }
+        fprintf(f, "\n");
+    }
     fclose(f);
     printf("O ARQUIVO FOI SALVO EM: dados.txt\n");
 }
 /*
-
+lê um arquivo e todas as informações presentes nele.
 
 */
 int carregarDados(const char *arquivo)
@@ -205,24 +235,35 @@ int carregarDados(const char *arquivo)
         puts("ERRO AO ABRIR ESTE ARQUIVO");
         return 0;
     }
-    fscanf(f, "%d\n", &n);
+
+    if (fscanf(f, "%d\n", &n) != 1 || n <= 0)
+    {
+        puts("\nARQUIVO VAZIO. POR FAVOR, INSIRA OS DADOS MANUALMENTE.");
+        fclose(f);
+        return 0;
+    }
+
     for (int i = 0; i < n; i++)
     {
         fgets(cidades[i], 100, f);
         cidades[i][strcspn(cidades[i], "\n")] = 0;
     }
     for (int i = 0; i < n; i++)
+    {
         for (int j = 0; j < n; j++)
-            fscanf(f, "%d", &matriz_de_adjacencia[i][j]);
+        {
+            fscanf(f, "%f;", &matriz_de_adjacencia[i][j]);
+        }
+    }
     fclose(f);
 
     Dados_carregados = 1;
-    printf("Os dados foram carregados com sucesso!\n");
+    printf("\nOs dados foram carregados com sucesso!\n");
     return 1;
 }
+
 /*
-
-
+servirá para guardar dentro de um arquivo todos os resultados finais do algoritmo de floyd-warshall
 */
 void salvar_resultados(const char *dados)
 {
@@ -236,7 +277,9 @@ void salvar_resultados(const char *dados)
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < n; j++)
-            fprintf(f, "%d ", matriz_distancias_minimas[i][j]);
+        {
+            fprintf(f, "%.2f; ", matriz_distancias_minimas[i][j]);
+        }
         fprintf(f, "\n");
     }
 
@@ -244,17 +287,19 @@ void salvar_resultados(const char *dados)
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < n; j++)
+        {
             fprintf(f, "%d ", matriz_predecessores[i][j]);
+        }
         fprintf(f, "\n");
     }
     fclose(f);
-    printf("OS RESULTADOS FORAM SALVOS NO ARQUIVO:  %s\n", dados);
+    printf("\nOS RESULTADOS FORAM SALVOS NO ARQUIVO:  %s\n", dados);
 }
 /*
-
+reconstroi e exibe a rota entre dois municipios do agreste.
 
 */
-void mostrarCaminho(int origem, int destino)
+void mostrar_caminho(int origem, int destino)
 {
     if (matriz_predecessores[origem][destino] == -1)
     {
@@ -274,12 +319,14 @@ void mostrarCaminho(int origem, int destino)
     {
         printf("%s", cidades[caminho[i]]);
         if (i > 0)
+        {
             printf(" --> ");
+        }
     }
     printf("\n");
 }
 /*
-
+dentro desta funcao o usuário vai carregar ou inserir os dados manualmente.
 */
 void menu_entrada_dados()
 {
@@ -293,7 +340,7 @@ void menu_entrada_dados()
 
     if (opcao == 1)
     {
-        printf("Digite o numero de cidades: ");
+        printf("\nDigite o numero de cidades: ");
         scanf("%d", &n);
         getchar();
         for (int i = 0; i < n; i++)
@@ -302,15 +349,16 @@ void menu_entrada_dados()
             fgets(cidades[i], 100, stdin);
             cidades[i][strcspn(cidades[i], "\n")] = 0;
         }
-        printf("Digite a matriz de adjacencia:\n");
+        printf("\nDigite a matriz de adjacencia:\n");
         for (int i = 0; i < n; i++)
+        {
             for (int j = 0; j < n; j++)
             {
                 printf("De %s para %s: ", cidades[i], cidades[j]);
-                scanf("%d", &matriz_de_adjacencia[i][j]);
+                scanf("%f", &matriz_de_adjacencia[i][j]);
             }
-        Dados_carregados = 0;
-        Dados_carregados = 0;
+        }
+        Dados_carregados = 1;
         salvardados();
     }
     else if (opcao == 2)
@@ -323,55 +371,52 @@ void menu_entrada_dados()
     }
 }
 /*
-
-
+esta função serve para o usuario ver as matrizes do algoritmo, ou seja, para o usuario vê-las, é  necessário fazer o algoritmo primeiro.
 */
 void menu_ver_matrizes()
 {
-    if (!algorimtmoExecutado)
+    if (!algoritmoExecutado)
     {
-        printf("POR FAVOR, FACA O ALGORITMO DE FLOYD-WARSHALL PRIMEIRO.\n");
+        printf("\nPOR FAVOR, FACA O ALGORITMO DE FLOYD-WARSHALL PRIMEIRO.\n");
         return;
     }
     int opcao;
-    printf("\n--- TODAS AS MATRIZES DISPONÍVEIS ---\n");
-    printf("1 - Visualizar a Matriz de Adjacencia\n");
-    printf("2 - Visualizar a Matriz de Distancias Minimas\n");
-    printf("3 - Visualizar a Matriz de Predecessores\n");
-    printf("Sua Escolha: ");
+    printf("\n--- TODAS AS MATRIZES DISPONIVEIS ---\n");
+    printf("1 - Visualizar a Matriz de Distancias Minimas\n");
+    printf("2 - Visualizar a Matriz de Predecessores\n");
+    printf("SUA ESCOLHA EH: ");
     scanf("%d", &opcao);
 
     switch (opcao)
     {
     case 1:
-        imprimirmatriz(matriz_de_adjacencia, "Matriz de Adjacencia");
+        imprimirmatriz_minima(matriz_distancias_minimas, "Matriz de Distancias Minimas");
         break;
+
     case 2:
-        imprimirmatriz(matriz_distancias_minimas, "Matriz de Distancias Minimas");
+        imprimirmatriz_predecessor(matriz_predecessores, "\nMatriz de Predecessores");
         break;
-    case 3:
-        imprimirmatriz(matriz_predecessores, "Matriz de Predecessores");
-        break;
+
     default:
         printf("Opcao invalida.\n");
     }
 }
 /*
-
+esta função vai permitir ao usuario descobrir qual o menor caminho entre duas cidades - tudo isso após a execução do floyd-warshall.
 */
 void ver_caminho()
 {
-    if (!algorimtmoExecutado)
+    if (!algoritmoExecutado)
     {
         printf("POR FAVOR, FACA O ALGORITMO DE FLOYD-WARSHALL PRIMEIRO\n");
         return;
     }
-    printf("TODAS AS CIDADES DISPONIVEIS:\n");
+    printf("\nTODAS AS CIDADES DISPONIVEIS:\n");
     for (int i = 0; i < n; i++)
         printf("%d - %s\n", i, cidades[i]);
 
     int origem, destino;
-    printf("ESCOLHA O NUMERO DA CIDADE DE PARTIDA: ");
+    printf("\nESCOLHA O NUMERO DA CIDADE DE PARTIDA: ");
     scanf("%d", &origem);
     printf("ESCOLHA O NUMERO DA CIDADE DE DESTINO: ");
     scanf("%d", &destino);
@@ -383,10 +428,12 @@ void ver_caminho()
     }
 
     if (matriz_distancias_minimas[origem][destino] == infinito)
+    {
         printf("NAO EXISTE UM CAMINHO PARA ESTE LUGAR.\n");
+    }
     else
     {
-        printf("O CUSTO TOTAL EH %d\n QUILOMETROS", matriz_distancias_minimas[origem][destino]);
-        mostrarCaminho(origem, destino);
+        printf("\nO CUSTO TOTAL EH %.2f QUILOMETROS\n", matriz_distancias_minimas[origem][destino]);
+        mostrar_caminho(origem, destino);
     }
 }
