@@ -1,4 +1,4 @@
-# 🚀 Floyd-Warshall em C — Projeto de Portfólio
+# Algoritmo de Floyd-Warshall em C — Projeto Instituto Federal de Ciência e Tecnologia do Rio Grande do Norte 
 
 Implementação do **algoritmo de Floyd-Warshall** em **linguagem C**, com foco em **organização de código**, **modularização**, **boas práticas de engenharia de software** e **estrutura profissional de projeto**.
 
@@ -6,7 +6,7 @@ O sistema calcula os **menores caminhos entre todos os pares de cidades** em um 
 
 ---
 
-## 🧠 Sobre o Projeto
+## Sobre o Projeto
 
 Este projeto foi desenvolvido com o objetivo de demonstrar:
 
@@ -21,7 +21,7 @@ Ideal para fins acadêmicos e como **projeto de portfólio**.
 
 ---
 
-## ✨ Funcionalidades
+## Suas Funcionalidades
 
 - Cadastro manual de cidades e distâncias
 - Importação de dados via arquivo (`dados.txt`)
@@ -36,7 +36,7 @@ Ideal para fins acadêmicos e como **projeto de portfólio**.
 
 ---
 
-## 🗂️ Arquitetura do Projeto
+## Arquitetura do Projeto
 
 floyd-warshall/
 │
@@ -67,7 +67,7 @@ floyd-warshall/
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+##  Tecnologias Utilizadas
 
 - **C (ANSI C / C99)**
 - **GCC**
@@ -77,9 +77,9 @@ floyd-warshall/
 
 ---
 
-## ⚙️ Como Executar
+##  Como Executar? 
 
-### 🔹 Compilação manual (Windows)
+###  Compilação manual (Windows)
 
 ```powershell
 gcc src\main.c src\menu\menu.c src\data\data_io.c src\algorithm\floyd_warshall.c src\io\print.c -Iinclude -o floyd.exe
