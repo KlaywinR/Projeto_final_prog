@@ -67,7 +67,7 @@ floyd-warshall/
 
 ---
 
-##  Tecnologias Utilizadas
+##   Adventos Tecnológicos Utilizados
 
 - **C (ANSI C / C99)**
 - **GCC**
