@@ -1,4 +1,4 @@
-# Algoritmo de Floyd-Warshall em C — Projeto Instituto Federal de Ciência e Tecnologia do Rio Grande do Norte 
+# Algoritmo de Floyd-Warshall em C — Projeto do Instituto Federal de Ciência e Tecnologia do Rio Grande do Norte 
 
 Implementação do **algoritmo de Floyd-Warshall** em **linguagem C**, com foco em **organização de código**, **modularização**, **boas práticas de engenharia de software** e **estrutura profissional de projeto**.
 
